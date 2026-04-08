@@ -234,11 +234,11 @@ export default function UnitedCardCalculator() {
 
       <div style={{ maxWidth: "540px", margin: "0 auto", padding: "20px 16px 40px" }}>
 
-        {/* Spending Inputs */}
+        {/* Annual Spending */}
         <div style={sBox}>
-          <div style={sLabel}>Monthly Spending</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            {CATEGORIES.map((cat) => (
+          <div style={sLabel}>Annual Spending</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "10px" }}>
+            {CATEGORIES.filter((c) => c.annual).map((cat) => (
               <div key={cat.key} style={{
                 background: alpha(T.slate800, 0.5), borderRadius: "10px",
                 padding: "12px", border: `1px solid ${alpha(T.slate400, 0.07)}`,
@@ -251,7 +251,44 @@ export default function UnitedCardCalculator() {
                   <span style={{
                     fontSize: "9px", color: T.slate600, fontFamily: T.mono,
                     marginLeft: "auto",
-                  }}>{cat.annual ? "/yr" : "/mo"}</span>
+                  }}>/yr</span>
+                </label>
+                <div style={{ position: "relative" }}>
+                  <span style={{
+                    position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)",
+                    color: T.slate600, fontSize: "14px", fontWeight: 600,
+                  }}>$</span>
+                  <input
+                    type="number"
+                    value={spending[cat.key] || ""}
+                    placeholder={cat.placeholder}
+                    onChange={(e) => setSpending({ ...spending, [cat.key]: Number(e.target.value) || 0 })}
+                    style={sInput}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Monthly Spending */}
+        <div style={sBox}>
+          <div style={sLabel}>Monthly Spending</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+            {CATEGORIES.filter((c) => !c.annual).map((cat) => (
+              <div key={cat.key} style={{
+                background: alpha(T.slate800, 0.5), borderRadius: "10px",
+                padding: "12px", border: `1px solid ${alpha(T.slate400, 0.07)}`,
+              }}>
+                <label style={{
+                  display: "flex", alignItems: "center", gap: "6px",
+                  fontSize: "12px", color: T.slate400, marginBottom: "8px", fontWeight: 500,
+                }}>
+                  <span>{cat.icon}</span>{cat.label}
+                  <span style={{
+                    fontSize: "9px", color: T.slate600, fontFamily: T.mono,
+                    marginLeft: "auto",
+                  }}>/mo</span>
                 </label>
                 <div style={{ position: "relative" }}>
                   <span style={{
