@@ -82,7 +82,10 @@ const CATEGORIES = [
   { key: "other", label: "Everything Else", icon: "🛒", placeholder: "800" },
 ];
 
-const BAG_COST = 35;
+const BAG_COST = {
+  domestic: { first: 45, second: 55 },
+  international: { first: 75, second: 100 },
+};
 const LOUNGE_VALUE = 59;
 const MILE_VALUE = 0.014;
 
@@ -152,15 +155,15 @@ export default function UnitedCardCalculator() {
     united: 2000, dining: 400, hotels: 100, gas: 150, streaming: 30, other: 800,
   });
   const [flights, setFlights] = useState([
-    { id: 1, label: "Flight 1", bags: 1, lounge: false },
-    { id: 2, label: "Flight 2", bags: 1, lounge: false },
-    { id: 3, label: "Flight 3", bags: 0, lounge: true },
-    { id: 4, label: "Flight 4", bags: 1, lounge: false },
+    { id: 1, label: "Flight 1", bags: 1, lounge: false, international: false },
+    { id: 2, label: "Flight 2", bags: 1, lounge: false, international: false },
+    { id: 3, label: "Flight 3", bags: 0, lounge: true, international: true },
+    { id: 4, label: "Flight 4", bags: 1, lounge: false, international: false },
   ]);
 
   const addFlight = () => {
     const id = nextId.current++;
-    setFlights([...flights, { id, label: `Flight ${flights.length + 1}`, bags: 1, lounge: false }]);
+    setFlights([...flights, { id, label: `Flight ${flights.length + 1}`, bags: 1, lounge: false, international: false }]);
   };
   const removeFlight = (id) => setFlights(flights.filter((f) => f.id !== id));
   const updateFlight = (id, field, val) =>
@@ -184,7 +187,9 @@ export default function UnitedCardCalculator() {
       let bagSavings = 0;
       for (const flight of flights) {
         const coveredBags = Math.min(flight.bags, card.freeBags);
-        bagSavings += coveredBags * BAG_COST * 2;
+        const fees = flight.international ? BAG_COST.international : BAG_COST.domestic;
+        if (coveredBags >= 1) bagSavings += fees.first * 2;
+        if (coveredBags >= 2) bagSavings += fees.second * 2;
       }
 
       let loungeSavings = 0;
@@ -371,6 +376,30 @@ export default function UnitedCardCalculator() {
                         >{n}</button>
                       ))}
                     </div>
+                  </div>
+
+                  {/* International toggle */}
+                  <div
+                    onClick={() => updateFlight(flight.id, "international", !flight.international)}
+                    style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}
+                  >
+                    <div style={{
+                      width: "36px", height: "20px", borderRadius: "10px",
+                      background: flight.international ? alpha(T.sky, 0.35) : alpha(T.slate800, 0.8),
+                      border: flight.international ? `1px solid ${alpha(T.sky, 0.5)}` : `1px solid ${alpha(T.slate400, 0.15)}`,
+                      position: "relative", transition: "all 0.2s",
+                    }}>
+                      <div style={{
+                        width: "14px", height: "14px", borderRadius: "50%",
+                        background: flight.international ? T.sky : T.slate600,
+                        position: "absolute", top: "2px",
+                        left: flight.international ? "19px" : "2px",
+                        transition: "all 0.2s",
+                      }} />
+                    </div>
+                    <span style={{ fontSize: "11px", color: flight.international ? T.sky : T.slate500, fontFamily: T.mono }}>
+                      Int'l
+                    </span>
                   </div>
 
                   {/* Lounge toggle */}
@@ -617,7 +646,7 @@ export default function UnitedCardCalculator() {
           border: `1px solid ${alpha(T.slate400, 0.06)}`,
         }}>
           <p style={{ fontSize: "11px", color: T.slate600, margin: 0, lineHeight: 1.6 }}>
-            Mile value estimated at 1.4¢ each. Checked bag fee: $35 per bag per direction.
+            Mile value estimated at 1.4¢ each. Domestic bag fees: $45/$55 (1st/2nd per direction). International: $75/$100.
             Lounge value: $59/visit (2 visits per roundtrip). Fee shown separately in breakdown.
             Welcome bonuses not included — check Chase for current offers. Benefits subject to change.
           </p>
