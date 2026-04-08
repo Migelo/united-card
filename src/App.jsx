@@ -35,6 +35,7 @@ const CARDS = [
     rates: { united: 2, dining: 1, hotels: 1, gas: 1, streaming: 1, other: 1 },
     freeBags: 0,
     lounge: false,
+    geTsa: false,
     perks: [],
   },
   {
@@ -45,6 +46,7 @@ const CARDS = [
     rates: { united: 2, dining: 2, hotels: 2, gas: 1, streaming: 1, other: 1 },
     freeBags: 1,
     lounge: false,
+    geTsa: true,
     perks: ["Priority boarding", "$100 GE/TSA credit", "500 PQP"],
   },
   {
@@ -55,6 +57,7 @@ const CARDS = [
     rates: { united: 3, dining: 3, hotels: 2, gas: 1, streaming: 1, other: 1 },
     freeBags: 2,
     lounge: false,
+    geTsa: true,
     perks: ["Priority boarding", "$100 GE/TSA credit", "Award savings 2x/yr", "3,000 PQP"],
   },
   {
@@ -65,6 +68,7 @@ const CARDS = [
     rates: { united: 4, dining: 2, hotels: 2, gas: 1, streaming: 1, other: 1 },
     freeBags: 2,
     lounge: true,
+    geTsa: true,
     perks: ["United Club access", "Priority boarding", "$100 GE/TSA credit", "Award savings 2x/yr", "4,000 PQP"],
   },
 ];
@@ -188,7 +192,7 @@ export default function UnitedCardCalculator() {
         loungeSavings = totalLoungeVisits * LOUNGE_VALUE;
       }
 
-      const geTsaCredit = card.fee > 0 ? 20 : 0;
+      const geTsaCredit = card.geTsa ? 20 : 0;
       const totalValue = milesValue + bagSavings + loungeSavings + geTsaCredit - card.fee;
       return { ...card, totalMiles, milesValue, bagSavings, loungeSavings, totalValue };
     }).sort((a, b) => b.totalValue - a.totalValue);
